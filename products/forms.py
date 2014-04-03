@@ -102,6 +102,17 @@ def _category_delete(sender, instance, **kwargs):
             if category != instance.id:
                 categories.append(category)
         product.categories = categories
+
+        #from tulpe to listField
+        flatten_opinions = []
+        for opinion in product.opinions:
+            old_opinion = Opinion.create()
+            old_opinion.login = opinion[1]["login"]
+            old_opinion.text = opinion[1]["text"]
+            old_opinion.pub_date = opinion[1]["pub_date"]
+            flatten_opinions.append(old_opinion)
+        product.opinions = flatten_opinions
+        
         product.save()
 
 @receiver(m2m_changed, sender=Category)

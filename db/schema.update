@@ -1,0 +1,2 @@
+use lab5
+db.users.save( {username:"lab5_user"} )

@@ -1,0 +1,76 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'jrating/jquery/jRating.jquery.css' %}" media="screen" />
+<!-- jQuery files -->
+<script type="text/javascript" src="{% static 'jrating/jquery/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'jrating/jquery/jRating.jquery.js' %}"></script>
+
+<p><a href="/admin/">Админка</a></p>
+<p><a href="/products/">К списку продуктов</a></p>
+
+<div class="rating" data-average="0" data-id="product.id" style="height:200px;width:100px;"></div>
+
+<!-- JS to add -->
+<script type="text/javascript">
+  var csrf_token = '<%= token_value %>';
+  $(document).ready(function(){
+    $(".rating").jRating({
+         step:true,
+         length : 5,
+         rateMax : 5,
+         onClick : function(element,rate){
+           $.ajax({
+                type: "POST",
+                url: "vote/",
+                headers: {
+                    'X-CSRF-Token':$('meta[name="csrf-token"]').attr('content'),
+                },
+                data: "&mark=" + rate,
+                success: function(msg){
+                    alert("Голос учтен!");                      
+                }})
+         },
+         onError : function(){
+           alert('Произошла ошибка :(');
+         }
+    });
+  });
+</script>
+
+<h1>Продукт {{product.name}}</h1>
+<p><b>Описание продукта</b>:&nbsp;{{ product.description }}</p>
+<p><b>Категории продукта</b>:</p>
+
+<ul>
+{% for category in category_names %}
+    <li>
+    	{{ category }}
+    </li>
+{% endfor %}
+</ul>
+
+<p><b>Отзывы о продукте</b></p>
+<ul>
+{% for opinion in flatten_opinions %}
+    <li>
+    	<i>{{ opinion.login }}</i>, {{opinion.pub_date}}:
+        <br>
+        <br>
+        &nbsp;&nbsp;&nbsp;{{ opinion.text }}
+    </li>
+    <br>
+{% endfor %}
+</ul>
+
+<br>
+<p>---------------------------------------------------------------</p>
+<div id="op"><h3>Оставить отзыв о продукте</h3></div>
+<p>---------------------------------------------------------------</p>
+<form action="{% url 'products.views.addOpinion' product.id %}" method="POST">{% csrf_token %}
+    <div id="cform">
+        Логин:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ form.login }}
+        <br>
+        Текст отзыва: {{ form.text }}
+    </div>
+    <div id="submit"><input type="submit" value="Опубликовать отзыв"></div>
+</form>

@@ -1,0 +1,22 @@
+<p><a href="/admin/">Админка</a></p>
+<h1>Список продуктов</h1>
+<br>
+<form action="/products/stub/search/" method="get">
+    <input type="text" name="q" value="Введите описание продукта">
+    <input type="submit" value="Найти">
+</form>
+<br>
+{% if product_list %}
+    <ul>
+    {% for product in product_list %}
+        <li>
+        	<p><b>Наименование продукта</b>:&nbsp;<a href="/products/{{ product.id }}/">{{ product.name }}</a></p>
+        	<p><b>Описание продукта</b>:&nbsp;{{ product.description }}</p>
+        	<p><b>Рейтинг продукта</b>:&nbsp;{{ product.mark }}</p>
+        </li>
+        <br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Продуктов не обнаружено.</p>
+{% endif %}

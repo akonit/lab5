@@ -15,11 +15,7 @@ class ProductForm(forms.ModelForm):
         super(ProductForm,self).__init__(*args, **kwargs)
         self.fields['categories'].widget.choices = [(i.name, i) for i in Category.objects.all()]
         if self.instance.name:
-            cf = []
-            for category in self.instance.categories:
-                c = Category.objects.get(id=category)
-                cf.append(str(c.name))
-            self.fields['categories'].initial = cf
+            self.fields['categories'].initial = self.instance.categories
 
     def save(self, *args, **kwargs):
         instance = super(ProductForm, self).save(commit=False)
@@ -112,7 +108,7 @@ def _category_delete(sender, instance, **kwargs):
             old_opinion.pub_date = opinion[1]["pub_date"]
             flatten_opinions.append(old_opinion)
         product.opinions = flatten_opinions
-        
+
         product.save()
 
 @receiver(m2m_changed, sender=Category)
